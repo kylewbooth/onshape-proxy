@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martin Assembly Designer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header>
+    <img id="martin-logo" alt="Martin Sprocket & Gear">
+    <div class="header-divider"></div>
+    <h1>Assembly <span>Designer</span></h1>
+    <nav class="tab-nav">
+        <button class="tab-btn active" id="tab-blueflex">Blueflex</button>
+        <button class="tab-btn" id="tab-goflex">Go-Flex</button>
+        <button class="tab-btn" id="tab-gear">Gear</button>
+    </nav>
+    <div class="header-badge" id="header-badge">COUPLING TYPE: BLUEFLEX</div>
+</header>
+
+<!-- ===================== BLUEFLEX TAB ===================== -->
+<div id="tab-blueflex-content" class="tab-content active">
+    <div class="main">
+
+        <!-- LEFT INPUTS -->
+        <div class="inputs-panel">
+            <div class="panel-title">Configuration Inputs</div>
+
+            <div class="field-group">
+                <label>Assembly Style</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btn-cc">Close Coupled</button>
+                    <button class="toggle-btn" id="btn-sp">Spacer</button>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>Shaft Size 1</label>
+                <div class="unit-row">
+                    <input type="number" id="shaft1" min="0" step="0.0625" placeholder="0.000">
+                    <span class="unit-label">in</span>
+                </div>
+                <div class="validation-row" id="v-shaft1"></div>
+            </div>
+
+            <div class="field-group">
+                <label>Shaft Size 2</label>
+                <div class="unit-row">
+                    <input type="number" id="shaft2" min="0" step="0.0625" placeholder="0.000">
+                    <span class="unit-label">in</span>
+                </div>
+                <div class="validation-row" id="v-shaft2"></div>
+            </div>
+
+            <div id="perf-inputs-group">
+                <div class="field-group">
+                    <label>Motor Horsepower</label>
+                    <div class="unit-row">
+                        <input type="number" id="hp" min="0" step="0.5" placeholder="0.0">
+                        <span class="unit-label">HP</span>
+                    </div>
+                    <div class="sf-result-row" style="margin-top:6px">
+                        <span class="sf-result-label">Calculated Torque:</span>
+                        <span class="sf-value-display dim" id="torque-display">—</span>
+                        <span class="unit-label" style="border:none;background:none;font-size:10px">in-lbs</span>
+                    </div>
+                    <input type="number" id="torque" style="display:none" value="0">
+                </div>
+
+                <div class="field-group">
+                    <label>Application Speed</label>
+                    <div class="unit-row">
+                        <input type="number" id="speed" min="0" placeholder="0">
+                        <span class="unit-label">RPM</span>
+                    </div>
+                    <div class="validation-row" id="v-speed"></div>
+                </div>
+
+                <div class="field-group">
+                    <label>Service Factor</label>
+                    <div class="toggle-group" style="margin-bottom:8px">
+                        <button class="toggle-btn active" id="sf-btn-manual" onclick="sfToggleMode('','manual')">Manual</button>
+                        <button class="toggle-btn" id="sf-btn-app" onclick="sfToggleMode('','app')">By Application</button>
+                    </div>
+                    <div id="sf-manual-group">
+                        <input type="number" id="sf" min="1" step="0.05" value="1.0">
+                    </div>
+                    <div id="sf-app-group" style="display:none">
+                        <select id="sf-app-select" style="margin-bottom:6px">
+                            <option value="">— select application —</option>
+                        </select>
+                        <div id="sf-sub1-group" style="display:none">
+                            <select id="sf-sub1-select" style="margin-bottom:6px">
+                                <option value="">— select subcategory —</option>
+                            </select>
+                        </div>
+                        <div id="sf-sub2-group" style="display:none">
+                            <select id="sf-sub2-select" style="margin-bottom:6px">
+                                <option value="">— select subcategory —</option>
+                            </select>
+                        </div>
+                        <div class="sf-result-row">
+                            <span class="sf-result-label">Service Factor:</span>
+                            <span class="sf-value-display dim" id="sf-display">—</span>
+                        </div>
+                        <div class="sf-msg" id="sf-msg"></div>
+                        <!-- Hidden input still drives the computation -->
+                        <input type="number" id="sf-hidden" style="display:none" value="1.0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <button class="skip-btn" id="btn-skip-perf">Skip Performance Inputs</button>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field-group">
+                <label>Choose Size</label>
+                <select id="size-select">
+                    <option value="">— select size —</option>
+                </select>
+                <div class="validation-row" id="v-size"></div>
+            </div>
+
+            <div id="spacer-style-group" class="field-group" style="display:none">
+                <label>Spacer Style</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btn-t35">T35 — Half</button>
+                    <button class="toggle-btn" id="btn-t31">T31 — Full</button>
+                </div>
+            </div>
+
+            <div id="cover-style-group" class="field-group">
+                <label>Cover Style</label>
+                <select id="cover-select">
+                    <option value="">— select —</option>
+                    <option value="T10">T10</option>
+                    <option value="T20">T20</option>
+                </select>
+                <div class="validation-row" id="v-cover"></div>
+            </div>
+
+            <div id="dbse-group" class="field-group" style="display:none">
+                <label>DBSE Selection</label>
+                <div class="radio-group">
+                    <button class="radio-btn active" id="btn-dbse-stock">Stock</button>
+                    <button class="radio-btn" id="btn-dbse-custom">Custom</button>
+                </div>
+                <div class="dbse-section" id="dbse-section">
+                    <div class="dbse-range" id="dbse-range-txt">Select a size first</div>
+                    <div id="stock-dbse-group">
+                        <label style="margin-top:8px">Stock DBSE</label>
+                        <select id="stock-dbse-select">
+                            <option value="">— select DBSE —</option>
+                        </select>
+                    </div>
+                    <div id="custom-dbse-group" style="display:none">
+                        <label style="margin-top:8px">Custom DBSE</label>
+                        <div class="unit-row">
+                            <input type="number" id="custom-dbse" step="0.0625" placeholder="0.000">
+                            <span class="unit-label">in</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end inputs-panel -->
+
+        <!-- RIGHT OUTPUT -->
+        <div class="output-panel">
+            <div id="output-content">
+                <div class="placeholder">
+                    <div class="placeholder-icon">⚙</div>
+                    <p>Enter inputs to configure assembly</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end .main -->
+</div><!-- end tab-blueflex-content -->
+
+<!-- ===================== GO-FLEX TAB ===================== -->
+<div id="tab-goflex-content" class="tab-content" style="display:none">
+    <div class="main">
+
+        <!-- LEFT INPUTS -->
+        <div class="inputs-panel">
+            <div class="panel-title">Configuration Inputs</div>
+
+            <div class="field-group">
+                <label>Assembly Style</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="gf-btn-cc">Close Coupled</button>
+                    <button class="toggle-btn" id="gf-btn-sp">Spacer</button>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>Shaft Size 1</label>
+                <div class="unit-row">
+                    <input type="number" id="gf-shaft1" min="0" step="0.0625" placeholder="0.000">
+                    <span class="unit-label">in</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>Shaft Size 2</label>
+                <div class="unit-row">
+                    <input type="number" id="gf-shaft2" min="0" step="0.0625" placeholder="0.000">
+                    <span class="unit-label">in</span>
+                </div>
+            </div>
+
+            <div id="gf-perf-inputs-group">
+                <div class="field-group">
+                    <label>Motor Horsepower</label>
+                    <div class="unit-row">
+                        <input type="number" id="gf-hp" min="0" step="0.5" placeholder="0.0">
+                        <span class="unit-label">HP</span>
+                    </div>
+                    <div class="sf-result-row" style="margin-top:6px">
+                        <span class="sf-result-label">Calculated Torque:</span>
+                        <span class="sf-value-display dim" id="gf-torque-display">—</span>
+                        <span class="unit-label" style="border:none;background:none;font-size:10px">in-lbs</span>
+                    </div>
+                    <input type="number" id="gf-torque" style="display:none" value="0">
+                </div>
+                <div class="field-group">
+                    <label>Application Speed</label>
+                    <div class="unit-row">
+                        <input type="number" id="gf-speed" min="0" placeholder="0">
+                        <span class="unit-label">RPM</span>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label>Service Factor</label>
+                    <div class="toggle-group" style="margin-bottom:8px">
+                        <button class="toggle-btn active" id="gf-sf-btn-manual" onclick="sfToggleMode('gf-','manual')">Manual</button>
+                        <button class="toggle-btn" id="gf-sf-btn-app" onclick="sfToggleMode('gf-','app')">By Application</button>
+                    </div>
+                    <div id="gf-sf-manual-group">
+                        <input type="number" id="gf-sf" min="1" step="0.05" value="1.0">
+                    </div>
+                    <div id="gf-sf-app-group" style="display:none">
+                        <select id="gf-sf-app-select" style="margin-bottom:6px">
+                            <option value="">— select application —</option>
+                        </select>
+                        <div id="gf-sf-sub1-group" style="display:none">
+                            <select id="gf-sf-sub1-select" style="margin-bottom:6px">
+                                <option value="">— select subcategory —</option>
+                            </select>
+                        </div>
+                        <div id="gf-sf-sub2-group" style="display:none">
+                            <select id="gf-sf-sub2-select" style="margin-bottom:6px">
+                                <option value="">— select subcategory —</option>
+                            </select>
+                        </div>
+                        <div class="sf-result-row">
+                            <span class="sf-result-label">Service Factor:</span>
+                            <span class="sf-value-display dim" id="gf-sf-display">—</span>
+                        </div>
+                        <div class="sf-msg" id="gf-sf-msg"></div>
+                        <input type="number" id="gf-sf" style="display:none" value="1.0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <button class="skip-btn" id="gf-btn-skip-perf">Skip Performance Inputs</button>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field-group">
+                <label>Choose Size</label>
+                <select id="gf-size-select">
+                    <option value="">— select size —</option>
+                </select>
+            </div>
+
+            <!-- CLOSE COUPLED fields -->
+            <div id="gf-cc-fields">
+                <div class="field-group">
+                    <label>Cover Style</label>
+                    <select id="gf-cover-select">
+                        <option value="">— select size first —</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Insert Style</label>
+                    <select id="gf-insert-select">
+                        <option value="">— select cover first —</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SPACER fields -->
+            <div id="gf-sp-fields" style="display:none">
+                <div class="field-group">
+                    <label>Spacer Style</label>
+                    <select id="gf-spacer-style-select">
+                        <option value="">— select size first —</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Mating Hub</label>
+                    <select id="gf-mating-hub-select">
+                        <option value="">— select size first —</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Cover Style</label>
+                    <select id="gf-cover-select-sp">
+                        <option value="">— select style first —</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Insert Style</label>
+                    <select id="gf-insert-select-sp">
+                        <option value="">— select cover first —</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>DBSE Selection</label>
+                    <div class="radio-group">
+                        <button class="radio-btn active" id="gf-btn-dbse-stock" onclick="gfSetDbseMode('stock')">Stock</button>
+                        <button class="radio-btn" id="gf-btn-dbse-custom" onclick="gfSetDbseMode('custom')">Custom</button>
+                    </div>
+                    <div class="dbse-section">
+                        <div class="dbse-range" id="gf-dbse-range-txt">Select a size first</div>
+                        <div id="gf-stock-dbse-group">
+                            <label style="margin-top:8px">Stock DBSE</label>
+                            <select id="gf-stock-dbse-select">
+                                <option value="">— select DBSE —</option>
+                            </select>
+                        </div>
+                        <div id="gf-custom-dbse-group" style="display:none">
+                            <label style="margin-top:8px">Custom DBSE</label>
+                            <div class="unit-row">
+                                <input type="number" id="gf-dbse" step="0.0625" placeholder="0.000">
+                                <span class="unit-label">in</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end inputs-panel -->
+
+        <!-- RIGHT OUTPUT -->
+        <div class="output-panel">
+            <div id="gf-output-content">
+                <div class="placeholder">
+                    <div class="placeholder-icon">⚙</div>
+                    <p>Enter inputs to configure assembly</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end .main -->
+</div><!-- end tab-goflex-content -->
+
+<!-- ===================== GEAR COUPLING TAB ===================== -->
+<div id="tab-gear-content" class="tab-content" style="display:none">
+    <div class="main">
+
+        <!-- LEFT INPUTS -->
+        <div class="inputs-panel">
+            <div class="panel-title">Configuration Inputs</div>
+
+            <div class="field-group">
+                <label>Shaft Size 1</label>
+                <div class="unit-row">
+                    <input type="number" id="gc-shaft1" min="0" step="0.0625" placeholder="0.000">
+                    <span class="unit-label">in</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>Shaft Size 2</label>
+                <div class="unit-row">
+                    <input type="number" id="gc-shaft2" min="0" step="0.0625" placeholder="0.000">
+                    <span class="unit-label">in</span>
+                </div>
+            </div>
+
+            <div id="gc-perf-inputs-group">
+                <div class="field-group">
+                    <label>Motor Horsepower</label>
+                    <div class="unit-row">
+                        <input type="number" id="gc-hp" min="0" step="0.5" placeholder="0.0">
+                        <span class="unit-label">HP</span>
+                    </div>
+                    <div class="sf-result-row" style="margin-top:6px">
+                        <span class="sf-result-label">Calculated Torque:</span>
+                        <span class="sf-value-display dim" id="gc-torque-display">—</span>
+                        <span class="unit-label" style="border:none;background:none;font-size:10px">in-lbs</span>
+                    </div>
+                    <input type="number" id="gc-torque" style="display:none" value="0">
+                </div>
+
+                <div class="field-group">
+                    <label>Application Speed</label>
+                    <div class="unit-row">
+                        <input type="number" id="gc-speed" min="0" placeholder="0">
+                        <span class="unit-label">RPM</span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Service Factor</label>
+                    <div class="toggle-group" style="margin-bottom:8px">
+                        <button class="toggle-btn active" id="gc-sf-btn-manual" onclick="sfToggleMode('gc-','manual')">Manual</button>
+                        <button class="toggle-btn" id="gc-sf-btn-app" onclick="sfToggleMode('gc-','app')">By Application</button>
+                    </div>
+                    <div id="gc-sf-manual-group">
+                        <input type="number" id="gc-sf" min="1" step="0.05" value="1.0">
+                    </div>
+                    <div id="gc-sf-app-group" style="display:none">
+                        <select id="gc-sf-app-select" style="margin-bottom:6px">
+                            <option value="">— select application —</option>
+                        </select>
+                        <div id="gc-sf-sub1-group" style="display:none">
+                            <select id="gc-sf-sub1-select" style="margin-bottom:6px">
+                                <option value="">— select subcategory —</option>
+                            </select>
+                        </div>
+                        <div id="gc-sf-sub2-group" style="display:none">
+                            <select id="gc-sf-sub2-select" style="margin-bottom:6px">
+                                <option value="">— select subcategory —</option>
+                            </select>
+                        </div>
+                        <div class="sf-result-row">
+                            <span class="sf-result-label">Service Factor:</span>
+                            <span class="sf-value-display dim" id="gc-sf-display">—</span>
+                        </div>
+                        <div class="sf-msg" id="gc-sf-msg"></div>
+                        <input type="number" id="gc-sf-hidden" style="display:none" value="1.0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <button class="skip-btn" id="gc-btn-skip-perf" onclick="gcToggleSkipPerf()">Skip Performance Inputs</button>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field-group">
+                <label>Choose Size</label>
+                <select id="gc-size-select">
+                    <option value="">— select size —</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>Assembly Style</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="gc-btn-g20" onclick="gcSetStyleType('G20')">G20 — Full Flex</button>
+                    <button class="toggle-btn" id="gc-btn-g52" onclick="gcSetStyleType('G52')">G52 — Half Flex</button>
+                    <button class="toggle-btn" id="gc-btn-g82" onclick="gcSetStyleType('G82')">G82 — Rigid</button>
+                </div>
+            </div>
+
+            <div class="field-group" id="gc-bolt-group" style="display:none">
+                <label>Bolt Style</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="gc-btn-exposed" onclick="gcSetBoltStyle('exposed')">Exposed Bolt</button>
+                    <button class="toggle-btn" id="gc-btn-shrouded" onclick="gcSetBoltStyle('shrouded')">Shrouded Bolt</button>
+                </div>
+            </div>
+
+        </div><!-- end inputs-panel -->
+
+        <!-- RIGHT OUTPUT -->
+        <div class="output-panel">
+            <div id="gc-output-content">
+                <div class="placeholder">
+                    <div class="placeholder-icon">⚙</div>
+                    <p>Enter inputs to configure assembly</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end .main -->
+</div><!-- end tab-gear-content -->
+
+<!-- ===================== ONSHAPE PANEL ===================== -->
+<div id="onshape-panel">
+  <div class="os-panel-header">
+    <span class="os-panel-title">⬡ OnShape</span>
+    <button class="os-panel-toggle" onclick="document.getElementById('onshape-panel').classList.toggle('collapsed')">▾</button>
+  </div>
+  <div class="os-panel-body">
+    <div class="os-field">
+      <label class="os-label">Configuration</label>
+      <select id="os-config-select"></select>
+    </div>
+    <button class="os-send-btn" id="os-send-btn" onclick="osSendToOnShape()">Send to OnShape</button>
+    <div class="os-status os-status-dim" id="os-status">Select a configuration and click Send.</div>
+  </div>
+</div>
+
+<script src="js/sf_data.js"></script>
+<script src="js/sf_selector.js"></script>
+<script src="js/script.js"></script>
+<script src="js/goflex_data.js"></script>
+<script src="js/goflex_images.js"></script>
+<script src="js/goflex.js"></script>
+<script src="js/gear_data.js"></script>
+<script src="js/gear_images.js"></script>
+<script src="js/gear.js"></script>
+<script src="js/onshape_ui.js"></script>
+
+</body>
+</html>
