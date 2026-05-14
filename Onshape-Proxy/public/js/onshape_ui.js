@@ -1,6 +1,6 @@
 // ===================== ONSHAPE INTEGRATION =====================
 // Update this URL after you deploy to Vercel
-const ONSHAPE_PROXY_URL = 'https://YOUR-PROJECT-NAME.vercel.app/api/onshape';
+const ONSHAPE_PROXY_URL = 'https://onshape-proxy.netlify.app/.netlify/functions/onshape';
 
 // Configuration options matching your OnShape list
 const ONSHAPE_CONFIGS = [
