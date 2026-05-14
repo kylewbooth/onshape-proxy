@@ -67,13 +67,15 @@ function onshapeRequest(method, path, queryString, body) {
 }
 
 module.exports = async (req, res) => {
-  // CORS headers so your configurator page can call this
+  // CORS headers — must be set on every response including errors
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Max-Age', '86400');
 
+  // Handle preflight immediately before anything else
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status(204).end();
   }
 
   const did = 'ea2e3173c11474027a950f47';
