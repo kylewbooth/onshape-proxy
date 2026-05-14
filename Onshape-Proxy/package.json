@@ -1,0 +1,6 @@
+{
+  "name": "onshape-proxy",
+  "version": "1.0.0",
+  "description": "OnShape API proxy for Martin Assembly Designer",
+  "private": true
+}
